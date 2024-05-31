@@ -4,11 +4,9 @@ import { Button, Input } from "antd";
 import * as esbuild from "esbuild-wasm";
 import { memo, useEffect, useRef, useState } from "react";
 import { unpkgPathPlugins } from "./unpkgPathPlugins";
-import axios from "axios";
 const { TextArea } = Input;
 const Home = () => {
 	const [code, setCode] = useState("");
-	const [result, setResult] = useState("");
 	async function startService() {
 		await esbuild.initialize({
 			worker: true,
@@ -22,12 +20,7 @@ const Home = () => {
 	const [count, setCount] = useState(0);
 	const Father = useRef<HTMLDivElement>(null);
 	const [inputWord, setInputWord] = useState("");
-	// const html123 = `
-	// <head></head>
-	// <body>
-	// <div>123</div>
-	// </body>
-	// `;
+
 	return (
 		<div className="home card">
 			<div ref={Father} className="father">
@@ -60,31 +53,27 @@ const Home = () => {
 						write: false,
 						plugins: [unpkgPathPlugins(code)]
 					});
-					console.log(result, "result");
-					setResult(esresult.outputFiles[0].text);
 					eval(esresult.outputFiles[0].text);
+					// const iframe = document.querySelector("iframe");
+					// iframe?.contentWindow?.postMessage(esresult.outputFiles[0].text, "*");
 				}}
 			>
 				在线转换
 			</Button>
-			<Button
-				onClick={async () => {
-					const res = await axios.get("bapi");
-					console.log(res, "res");
-				}}
-			>
-				获取数据
-			</Button>
 			<div>
 				<TextArea value={code} onChange={value => setCode(value.target.value)}></TextArea>
 			</div>
-			{/* <div>{result}</div> */}
 			<div id="root1"></div>
 			<iframe
-				srcDoc="<head></head>
+				srcDoc={`<head></head>
 							<body>
-								<div>123</div>
-							</body>"
+								<script>
+								
+								addEventListener("message",(code)=>{
+									eval(code.data)
+								})
+								</script>
+							</body>`}
 			></iframe>
 		</div>
 	);
