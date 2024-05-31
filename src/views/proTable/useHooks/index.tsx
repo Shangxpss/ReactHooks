@@ -1,19 +1,39 @@
-import { useEffect } from "react";
-import { Table, DatePicker, Button, Space } from "antd";
+// import { useEffect } from "react";
+import { Table, DatePicker, Button, Space, TableColumnType, Input, InputRef } from "antd";
 import useAuthButtons from "@/hooks/useAuthButtons";
-
+// import useRequestTs from "@/hooks/useRequestTs";
 import "./index.less";
+import { useRef, useState } from "react";
+import { FilterDropdownProps } from "antd/lib/table/interface";
 
+interface DataType {
+	key: string;
+	name: string;
+	age: number;
+	address: string;
+}
+type DataIndex = keyof DataType;
 const UseHooks = () => {
 	// 按钮权限
 	const { BUTTONS } = useAuthButtons();
 	const { RangePicker } = DatePicker;
+	// const [data, fetchData] = useRequestTs<any>("/opportunity/record/getCKSJList");
+	const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>(["1", "2", "3"]);
+	// const [searchText, setSearchText] = useState("");
+	// const [searchedColumn, setSearchedColumn] = useState("");
+	const searchInput = useRef<InputRef>(null);
+	// async function requestData() {
+	// 	await fetchData({
+	// 		csj: 1,
+	// 		pageNum: 1,
+	// 		pageSize: 10,
+	// 		corpName: "",
+	// 		codes: null
+	// 	});
+	// 	console.log(data, "data");
+	// }
 
-	useEffect(() => {
-		console.log(BUTTONS);
-	}, []);
-
-	const dataSource = [
+	const dataSource: DataType[] = [
 		{
 			key: "1",
 			name: "胡彦斌",
@@ -45,19 +65,44 @@ const UseHooks = () => {
 			address: "翻斗大街翻斗花园二号楼1001室"
 		}
 	];
+	function handleSearch(selectedKeys: string[], confirm: FilterDropdownProps["confirm"], dataIndex: DataIndex) {
+		confirm();
+		console.log(dataIndex);
+	}
+	const getColumnSearchProps = (dataIndex: DataIndex): TableColumnType<DataType> => ({
+		filterDropdown({ selectedKeys, setSelectedKeys, confirm /* clearFilters */ }) {
+			return (
+				<div style={{ padding: 8 }} onKeyDown={e => e.stopPropagation()}>
+					<Input
+						ref={searchInput}
+						placeholder={`Search ${dataIndex}`}
+						value={selectedKeys[0]}
+						onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+						onPressEnter={() => handleSearch(selectedKeys as string[], confirm, dataIndex)}
+						style={{ marginBottom: 8, display: "block" }}
+					/>
+				</div>
+			);
+		},
+		onFilter(value, record) {
+			return record[dataIndex].toString().toLowerCase().includes(value.toString().toLowerCase());
+		}
+	});
 
 	const columns: any[] = [
 		{
 			title: "姓名",
 			dataIndex: "name",
 			key: "name",
-			align: "center"
+			align: "center",
+			...getColumnSearchProps("name")
 		},
 		{
 			title: "年龄",
 			dataIndex: "age",
 			key: "age",
-			align: "center"
+			align: "center",
+			...getColumnSearchProps("age")
 		},
 		{
 			title: "住址",
@@ -67,6 +112,7 @@ const UseHooks = () => {
 			width: "50%"
 		}
 	];
+	const [count, setCount] = useState(0);
 	return (
 		<div className="card content-box">
 			<div className="date">
@@ -75,12 +121,43 @@ const UseHooks = () => {
 			</div>
 			<div className="auth">
 				<Space>
-					{BUTTONS.add && <Button type="primary">我是 Admin && User 能看到的按钮</Button>}
-					{BUTTONS.delete && <Button type="primary">我是 Admin 能看到的按钮</Button>}
+					{BUTTONS.add && (
+						<Button
+							onClick={async () => {
+								// await requestData();
+								setSelectedRowKeys(["1", "2"]);
+							}}
+							type="primary"
+						>
+							我是 Admin && User 能看到的按钮
+						</Button>
+					)}
+					{BUTTONS.delete && (
+						<Button
+							onClick={() => {
+								setCount(count + 1);
+								setCount(count => count + 1);
+							}}
+							type="primary"
+						>
+							我是 Admin 能看到的按钮
+						</Button>
+					)}
+					<div>{count}</div>
 					{BUTTONS.edit && <Button type="primary">我是 User 能看到的按钮</Button>}
 				</Space>
 			</div>
-			<Table bordered={true} dataSource={dataSource} columns={columns} />
+			<Table
+				rowSelection={{
+					selectedRowKeys,
+					onChange(newSelectedKeys) {
+						setSelectedRowKeys(newSelectedKeys);
+					}
+				}}
+				bordered={true}
+				dataSource={dataSource}
+				columns={columns}
+			/>
 		</div>
 	);
 };

@@ -46,6 +46,16 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 					target: "https://mock.mengxuegu.com/mock/62abda3212c1416424630a45", // easymock
 					changeOrigin: true,
 					rewrite: path => path.replace(/^\/api/, "")
+				},
+				"/HooksAdmin": {
+					target: `http://218.4.190.253:30208`,
+					changeOrigin: true,
+					rewrite: path => path.replace(/^\/HooksAdmin/, "")
+				},
+				"/bapi": {
+					target: `http://127.0.0.1:8000`,
+					changeOrigin: true
+					// rewrite: path => path.replace(/^\/HooksAdmin/, "")
 				}
 			}
 		},

@@ -1,9 +1,8 @@
 import { Login } from "@/api/interface/index";
 import { PORT1 } from "@/api/config/servicePort";
 import qs from "qs";
-
-import http from "@/api";
-
+import http from "@/api/oldIndex";
+import request from "@/api";
 /**
  * @name 登录模块
  */
@@ -14,6 +13,19 @@ export const loginApi = (params: Login.ReqLoginForm) => {
 	return http.post<Login.ResLogin>(PORT1 + `/login`, qs.stringify(params)); // post 请求携带 表单 参数  ==>  application/x-www-form-urlencoded
 	return http.post<Login.ResLogin>(PORT1 + `/login`, params, { headers: { noLoading: true } }); // 控制当前请求不显示 loading
 };
+
+/**
+ * @name 拿Token
+ */
+// * 用户登录接口
+export function loginAdmin<T>(params: Partial<Login.ReqLoginForm>) {
+	return request.post<T>(`/login`, params, {
+		headers: {
+			isToken: false
+		},
+		method: "post"
+	});
+}
 
 // * 获取按钮权限
 export const getAuthorButtons = () => {

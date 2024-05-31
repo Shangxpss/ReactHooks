@@ -12,9 +12,9 @@ import LayoutFooter from "./components/Footer";
 import "./index.less";
 
 const LayoutIndex = (props: any) => {
+	console.log(Layout);
 	const { Sider, Content } = Layout;
 	const { isCollapse, updateCollapse, setAuthButtons } = props;
-
 	// 获取按钮权限列表
 	const getAuthButtonsList = async () => {
 		const { data } = await getAuthorButtons();

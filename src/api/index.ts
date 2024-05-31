@@ -1,23 +1,23 @@
 import NProgress from "@/config/nprogress";
 import axios, { AxiosInstance, AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import { showFullScreenLoading, tryHideFullScreenLoading } from "@/config/serviceLoading";
-import { ResultData } from "@/api/interface";
 import { ResultEnum } from "@/enums/httpEnum";
 import { checkStatus } from "./helper/checkStatus";
 import { AxiosCanceler } from "./helper/axiosCancel";
 import { setToken } from "@/redux/modules/global/action";
 import { message } from "antd";
 import { store } from "@/redux";
+import { desEncrypt, desDecrypt } from "./helper/crypto";
 
 const axiosCanceler = new AxiosCanceler();
 
 const config = {
 	// 默认地址请求地址，可在 .env 开头文件中修改
-	baseURL: import.meta.env.VITE_API_URL as string,
+	// baseURL: import.meta.env.VITE_API_URL as string,
 	// 设置超时时间（10s）
-	timeout: 10000,
+	timeout: 10000
 	// 跨域时候允许携带凭证
-	withCredentials: true
+	// withCredentials: true
 };
 
 class RequestHttp {
@@ -34,12 +34,30 @@ class RequestHttp {
 		this.service.interceptors.request.use(
 			(config: AxiosRequestConfig) => {
 				NProgress.start();
+				console.log(config, "config");
+				config.url = "/HooksAdmin" + config.url;
+				if (config.headers) {
+					config.headers["requestType"] = config.method!;
+					config.headers["Content-Type"] = "application/json;charset=utf-8";
+					config.headers["Accept"] = "application/json, text/plain, */*";
+					if (!(config.headers.isToken === false)) {
+						config.headers["Authorization"] = store.getState().login.token;
+						config.headers["token"] = "cxgc123456"; // 让每个请求携带自定义token 请根据实际情况自行修改
+					}
+				}
+				config.data = JSON.stringify({
+					dataBody: desEncrypt(JSON.stringify(config.data), "98fbffd1064a4355b8abaacb6fa96f94")
+				});
 				// * 将当前请求添加到 pending 中
 				axiosCanceler.addPending(config);
+
 				// * 如果当前请求不需要显示 loading,在api服务中通过指定的第三个参数: { headers: { noLoading: true } }来控制不显示loading，参见loginApi
 				config.headers!.noLoading || showFullScreenLoading();
-				const token: string = store.getState().global.token;
-				return { ...config, headers: { ...config.headers, "x-access-token": token } };
+				// const token: string = store.getState().global.token;
+				return {
+					...config,
+					headers: { ...config.headers }
+				};
 			},
 			(error: AxiosError) => {
 				return Promise.reject(error);
@@ -52,10 +70,15 @@ class RequestHttp {
 		 */
 		this.service.interceptors.response.use(
 			(response: AxiosResponse) => {
+				// eslint-disable-next-line @typescript-eslint/no-unused-vars
 				const { data, config } = response;
 				NProgress.done();
+				console.log(response, "response");
+				data.data = JSON.parse(desDecrypt(data.data, "98fbffd1064a4355b8abaacb6fa96f94"));
+
 				// * 在请求结束后，移除本次请求(关闭loading)
 				axiosCanceler.removePending(config);
+
 				tryHideFullScreenLoading();
 				// * 登录失效（code == 599）
 				if (data.code == ResultEnum.OVERDUE) {
@@ -70,7 +93,7 @@ class RequestHttp {
 					return Promise.reject(data);
 				}
 				// * 成功请求（在页面上除非特殊情况，否则不用处理失败逻辑）
-				return data;
+				return data.data;
 			},
 			async (error: AxiosError) => {
 				const { response } = error;
@@ -88,16 +111,16 @@ class RequestHttp {
 	}
 
 	// * 常用请求方法封装
-	get<T>(url: string, params?: object, _object = {}): Promise<ResultData<T>> {
+	get<T>(url: string, params?: object, _object = {}): Promise<T> {
 		return this.service.get(url, { params, ..._object });
 	}
-	post<T>(url: string, params?: object, _object = {}): Promise<ResultData<T>> {
+	post<T>(url: string, params?: object, _object = {}): Promise<T> {
 		return this.service.post(url, params, _object);
 	}
-	put<T>(url: string, params?: object, _object = {}): Promise<ResultData<T>> {
+	put<T>(url: string, params?: object, _object = {}): Promise<T> {
 		return this.service.put(url, params, _object);
 	}
-	delete<T>(url: string, params?: any, _object = {}): Promise<ResultData<T>> {
+	delete<T>(url: string, params?: any, _object = {}): Promise<T> {
 		return this.service.delete(url, { params, ..._object });
 	}
 }

@@ -4,7 +4,6 @@ import Login from "@/views/login/index";
 
 // * 导入所有router
 const metaRouters = import.meta.globEager("./modules/*.tsx");
-
 // * 处理路由
 export const routerArray: RouteObject[] = [];
 Object.keys(metaRouters).forEach(item => {
