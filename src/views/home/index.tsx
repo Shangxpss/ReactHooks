@@ -2,8 +2,9 @@ import welcome from "@/assets/images/welcome01.png";
 import "./index.less";
 import { Button, Input } from "antd";
 import * as esbuild from "esbuild-wasm";
-import { memo, useEffect, useRef, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { unpkgPathPlugins } from "./unpkgPathPlugins";
+import { fetchPlugin } from "./fetchPlugin.ts";
 const { TextArea } = Input;
 const Home = () => {
 	const [code, setCode] = useState("");
@@ -11,7 +12,6 @@ const Home = () => {
 		await esbuild.initialize({
 			worker: true,
 			wasmURL: "/esbuild.wasm"
-			
 		});
 	}
 	useEffect(() => {
@@ -19,29 +19,9 @@ const Home = () => {
 	}, []);
 	// const dispatch = useDispatch();
 	const [count, setCount] = useState(0);
-	const Father = useRef<HTMLDivElement>(null);
-	const [inputWord, setInputWord] = useState("");
 
 	return (
 		<div className="home card">
-			<div ref={Father} className="father">
-				<Input value={inputWord} onChange={value => setInputWord(value.target.value)}></Input>
-				<div style={{ width: "60px" }} className="children">
-					{inputWord}
-				</div>
-				<Button
-					onClick={() => {
-						console.log(Father, "Father");
-						if (Father.current) {
-							const children = Father.current.querySelector(".children");
-							const scrollWith = children?.scrollWidth;
-							console.log(scrollWith, "scrollWith");
-						}
-					}}
-				>
-					tipTools
-				</Button>
-			</div>
 			<img src={welcome} alt="welcome" />
 			<MemoChildren />
 			<Button onClick={() => setCount(count => count + 1)}>Plus</Button>
@@ -52,7 +32,11 @@ const Home = () => {
 						entryPoints: ["index.js"],
 						bundle: true,
 						write: false,
-						plugins: [unpkgPathPlugins(code)]
+						plugins: [unpkgPathPlugins(), fetchPlugin(code)],
+						define: {
+							global: "window"
+							// "process.env.NODE_ENV": '"production"'
+						}
 					});
 					eval(esresult.outputFiles[0].text);
 					// const iframe = document.querySelector("iframe");
@@ -68,6 +52,7 @@ const Home = () => {
 			<iframe
 				srcDoc={`<head></head>
 							<body>
+							<div id="root"></div>
 								<script>
 								
 								addEventListener("message",(code)=>{
