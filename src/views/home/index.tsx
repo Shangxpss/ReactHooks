@@ -11,6 +11,7 @@ const Home = () => {
 		await esbuild.initialize({
 			worker: true,
 			wasmURL: "/esbuild.wasm"
+			
 		});
 	}
 	useEffect(() => {
