@@ -11,7 +11,7 @@ const Home = () => {
 	async function startService() {
 		await esbuild.initialize({
 			worker: true,
-			wasmURL: "/esbuild.wasm"
+			wasmURL: "https://unpkg.com/esbuild-wasm@0.20.2/esbuild.wasm"
 		});
 	}
 	useEffect(() => {
@@ -19,7 +19,16 @@ const Home = () => {
 	}, []);
 	// const dispatch = useDispatch();
 	const [count, setCount] = useState(0);
-
+	const html = `<head></head>
+	<body>
+	<div id="root"></div>
+		<script>
+		
+		addEventListener("message",(code)=>{
+			eval(code.data)
+		},false)
+		</script>
+	</body>`;
 	return (
 		<div className="home card">
 			<img src={welcome} alt="welcome" />
@@ -28,6 +37,8 @@ const Home = () => {
 			<div>{count}</div>
 			<Button
 				onClick={async () => {
+					const iframe = document.querySelector("iframe");
+					iframe!.srcdoc = html;
 					const esresult = await esbuild.build({
 						entryPoints: ["index.js"],
 						bundle: true,
@@ -38,9 +49,9 @@ const Home = () => {
 							// "process.env.NODE_ENV": '"production"'
 						}
 					});
-					eval(esresult.outputFiles[0].text);
-					// const iframe = document.querySelector("iframe");
-					// iframe?.contentWindow?.postMessage(esresult.outputFiles[0].text, "*");
+					// eval(esresult.outputFiles[0].text);
+
+					iframe?.contentWindow?.postMessage(esresult.outputFiles[0].text, "*");
 				}}
 			>
 				在线转换
@@ -49,18 +60,7 @@ const Home = () => {
 				<TextArea value={code} onChange={value => setCode(value.target.value)}></TextArea>
 			</div>
 			<div id="root1"></div>
-			<iframe
-				srcDoc={`<head></head>
-							<body>
-							<div id="root"></div>
-								<script>
-								
-								addEventListener("message",(code)=>{
-									eval(code.data)
-								})
-								</script>
-							</body>`}
-			></iframe>
+			<iframe sandbox="allow-scripts" srcDoc={html}></iframe>
 		</div>
 	);
 };
