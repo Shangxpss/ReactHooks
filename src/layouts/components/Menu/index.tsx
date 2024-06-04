@@ -65,7 +65,6 @@ const LayoutMenu = (props: any) => {
 		});
 		return newArr;
 	};
-
 	// 获取菜单列表并处理成 antd menu 需要的格式
 	const [menuList, setMenuList] = useState<MenuItem[]>([]);
 	const [loading, setLoading] = useState(false);

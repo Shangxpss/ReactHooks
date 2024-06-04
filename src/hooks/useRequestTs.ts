@@ -41,7 +41,7 @@ export default function <T = any>(url: string) {
 						}
 					}
 				} else {
-					setData({ ...data, value: [] as T });
+					setData({ ...data, value: [] as unknown as T });
 				}
 			} else if (res.list?.length) {
 				setData({ ...data, value: res.list, total: res.total });

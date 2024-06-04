@@ -1,4 +1,4 @@
-import { defineConfig, loadEnv, ConfigEnv, UserConfig } from "vite";
+import { defineConfig, loadEnv, ConfigEnv, UserConfig, splitVendorChunkPlugin } from "vite";
 import react from "@vitejs/plugin-react";
 import { resolve } from "path";
 import { wrapperEnv } from "./src/utils/getEnv";
@@ -77,7 +77,10 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 			// * EsLint 报错信息显示在浏览器界面上
 			eslintPlugin(),
 			// * 是否生成包预览
-			viteEnv.VITE_REPORT && visualizer(),
+			viteEnv.VITE_REPORT &&
+				visualizer({
+					open: true
+				}),
 			// * gzip compress
 			viteEnv.VITE_BUILD_GZIP &&
 				viteCompression({
@@ -86,7 +89,8 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 					threshold: 10240,
 					algorithm: "gzip",
 					ext: ".gz"
-				})
+				}),
+			splitVendorChunkPlugin()
 		],
 		esbuild: {
 			pure: viteEnv.VITE_DROP_CONSOLE ? ["console.log", "debugger"] : []

@@ -32,7 +32,7 @@ export const rootRouter: RouteObject[] = [
 		element: <Navigate to="/404" />
 	}
 ];
-
+console.log(rootRouter, "rootRouter");
 const Router = () => {
 	const routes = useRoutes(rootRouter);
 	return routes;

@@ -19,7 +19,7 @@ export function fetchPlugin(code: string): esbuild.Plugin {
 			});
 
 			build.onLoad({ filter: /.*/ }, async args => {
-				const cachedResult = await fileCache.getItem(args.path);
+				const cachedResult = await fileCache.getItem<esbuild.OnLoadResult>(args.path);
 				if (cachedResult) {
 					return cachedResult;
 				}
