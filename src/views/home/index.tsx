@@ -6,6 +6,8 @@ import { memo, useEffect, useState } from "react";
 import { unpkgPathPlugins } from "./unpkgPathPlugins";
 import { fetchPlugin } from "./fetchPlugin.ts";
 const { TextArea } = Input;
+import CodeEditor from "@/components/codeEditor";
+
 const Home = () => {
 	const [code, setCode] = useState("");
 	async function startService() {
@@ -31,6 +33,7 @@ const Home = () => {
 	</body>`;
 	return (
 		<div className="home card">
+			<CodeEditor />
 			<img src={welcome} alt="welcome" />
 			<MemoChildren />
 			<Button onClick={() => setCount(count => count + 1)}>Plus</Button>
