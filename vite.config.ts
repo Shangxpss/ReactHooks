@@ -7,7 +7,7 @@ import { createHtmlPlugin } from "vite-plugin-html";
 import viteCompression from "vite-plugin-compression";
 import eslintPlugin from "vite-plugin-eslint";
 import { createSvgIconsPlugin } from "vite-plugin-svg-icons";
-
+import { chunkSplitPlugin } from "vite-plugin-chunk-split";
 // @see: https://vitejs.dev/config/
 export default defineConfig((mode: ConfigEnv): UserConfig => {
 	const env = loadEnv(mode.mode, process.cwd());
@@ -62,6 +62,9 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 		// plugins
 		plugins: [
 			react(),
+			// chunkSplitPlugin({
+			// 	strategy: "unbundle"
+			// }),
 			createHtmlPlugin({
 				inject: {
 					data: {
@@ -89,8 +92,8 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 					threshold: 10240,
 					algorithm: "gzip",
 					ext: ".gz"
-				}),
-			splitVendorChunkPlugin()
+				})
+			// splitVendorChunkPlugin(),
 		],
 		esbuild: {
 			pure: viteEnv.VITE_DROP_CONSOLE ? ["console.log", "debugger"] : []
@@ -99,7 +102,7 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 		build: {
 			outDir: "dist",
 			// esbuild 打包更快，但是不能去除 console.log，去除 console 使用 terser 模式
-			minify: "esbuild",
+			minify: "esbuild"
 			// minify: "terser",
 			// terserOptions: {
 			// 	compress: {
@@ -107,14 +110,20 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 			// 		drop_debugger: true
 			// 	}
 			// },
-			rollupOptions: {
-				output: {
-					// Static resource classification and packaging
-					chunkFileNames: "assets/js/[name]-[hash].js",
-					entryFileNames: "assets/js/[name]-[hash].js",
-					assetFileNames: "assets/[ext]/[name]-[hash].[ext]"
-				}
-			}
+			// rollupOptions: {
+			// 	output: {
+			// 		// Static resource classification and packaging
+			// 		chunkFileNames: "assets/js/[name]-[hash].js",
+			// 		entryFileNames: "assets/js/[name]-[hash].js",
+			// 		assetFileNames: "assets/[ext]/[name]-[hash].[ext]",
+			// 		manualChunks(id) {
+			// 			console.log(id.includes("axios"));
+			// 			if (id.includes("axios")) {
+			// 				return "axios";
+			// 			}
+			// 		}
+			// 	}
+			// }
 		}
 	};
 });
