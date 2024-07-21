@@ -1,8 +1,9 @@
 import welcome from "@/assets/images/welcome01.png";
 import "./index.less";
 import { Button, Input } from "antd";
+import axios from "axios";
 import * as esbuild from "esbuild-wasm";
-import { memo, useEffect, useState } from "react";
+import { memo, useState } from "react";
 import { unpkgPathPlugins } from "./unpkgPathPlugins";
 import { fetchPlugin } from "./fetchPlugin.ts";
 const { TextArea } = Input;
@@ -10,15 +11,6 @@ import CodeEditor from "@/components/codeEditor";
 
 const Home = () => {
 	const [code, setCode] = useState("");
-	async function startService() {
-		await esbuild.initialize({
-			worker: true,
-			wasmURL: "https://unpkg.com/esbuild-wasm@0.20.2/esbuild.wasm"
-		});
-	}
-	useEffect(() => {
-		startService();
-	}, []);
 	// const dispatch = useDispatch();
 	const [count, setCount] = useState(0);
 	const html = `<head></head>
@@ -33,6 +25,27 @@ const Home = () => {
 	</body>`;
 	return (
 		<div className="home card">
+			<Button
+				onClick={async () => {
+					const res = await axios.get("/bapi/tours/123");
+					console.log(res.data, "data");
+				}}
+			>
+				get
+			</Button>
+			<Button
+				onClick={async () => {
+					setCount(count => count + 1);
+					const res = await axios.post("/bapi/tours", {
+						name: "joey",
+						age: count + 1
+					});
+					console.log(res.data, "data");
+					return count;
+				}}
+			>
+				post
+			</Button>
 			<CodeEditor />
 			<img src={welcome} alt="welcome" />
 			<MemoChildren />

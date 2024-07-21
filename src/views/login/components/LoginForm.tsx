@@ -7,7 +7,7 @@ import { loginApi } from "@/api/modules/login";
 import { HOME_URL } from "@/config/config";
 import { useDispatch } from "react-redux";
 import { setToken } from "@/redux/modules/global/action";
-import { setLoginToken } from "@/redux/modules/login/action";
+// import { setLoginToken } from "@/redux/modules/login/action";
 import { useTranslation } from "react-i18next";
 import { setTabsList } from "@/redux/modules/tabs/action";
 import { UserOutlined, LockOutlined, CloseCircleOutlined } from "@ant-design/icons";
@@ -26,7 +26,7 @@ export default function LoginForm() {
 			const { data } = await loginApi(loginForm);
 			dispatch(setToken(data!.access_token));
 			dispatch(setTabsList([]));
-			dispatch<any>(setLoginToken({ password: "123456", username: "101001" }));
+			// dispatch<any>(setLoginToken({ password: "123456", username: "101001" }));
 			message.success("登录成功！");
 			navigate(HOME_URL);
 		} finally {

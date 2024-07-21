@@ -1,4 +1,4 @@
-import { defineConfig, loadEnv, ConfigEnv, UserConfig, splitVendorChunkPlugin } from "vite";
+import { defineConfig, loadEnv, ConfigEnv, UserConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { resolve } from "path";
 import { wrapperEnv } from "./src/utils/getEnv";
@@ -7,7 +7,7 @@ import { createHtmlPlugin } from "vite-plugin-html";
 import viteCompression from "vite-plugin-compression";
 import eslintPlugin from "vite-plugin-eslint";
 import { createSvgIconsPlugin } from "vite-plugin-svg-icons";
-import { chunkSplitPlugin } from "vite-plugin-chunk-split";
+// import { chunkSplitPlugin } from "vite-plugin-chunk-split";
 // @see: https://vitejs.dev/config/
 export default defineConfig((mode: ConfigEnv): UserConfig => {
 	const env = loadEnv(mode.mode, process.cwd());
@@ -53,9 +53,9 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 					rewrite: path => path.replace(/^\/HooksAdmin/, "")
 				},
 				"/bapi": {
-					target: `http://127.0.0.1:8000`,
-					changeOrigin: true
-					// rewrite: path => path.replace(/^\/HooksAdmin/, "")
+					target: `http://127.0.0.1:8081`,
+					changeOrigin: true,
+					rewrite: path => path.replace(/^\/bapi/, "/api/v1")
 				}
 			}
 		},
