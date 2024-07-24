@@ -20,34 +20,9 @@ export default function <T = any>(url: string) {
 			const res: any = await request.service({
 				url: url,
 				method: "POST",
-				data: params,
-				baseUrl: url.indexOf("/map/") > -1 ? "mini" : undefined
+				data: params
 			} as AxiosRequestConfig);
 			console.log(res, "res");
-			if (res.code === 200) {
-				if (res.rows) {
-					setData(data => ({ ...data, value: res.rows, total: res.total }));
-					console.log(res.rows, "res.rows");
-					console.log(data.value, "data.valu e");
-				} else if (res.data) {
-					if (Array.isArray(res.data)) {
-						setData({ ...data, value: res.data, total: res.total });
-					} else {
-						if (res.data.list) {
-							setData({ ...data, value: res.data.list, total: res.data.total });
-						} else {
-							console.log(res, "comeHereData");
-							setData({ ...data, value: res.data, total: res.total });
-						}
-					}
-				} else {
-					setData({ ...data, value: [] as unknown as T });
-				}
-			} else if (res.list?.length) {
-				setData({ ...data, value: res.list, total: res.total });
-			} else {
-				throw Error(res.msg);
-			}
 		} catch (err: any) {
 			console.log(err, "errerrerr");
 

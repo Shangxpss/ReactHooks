@@ -3,6 +3,7 @@ import { Table, DatePicker, Button, Space, TableColumnType, Input, InputRef } fr
 import useAuthButtons from "@/hooks/useAuthButtons";
 // import useRequestTs from "@/hooks/useRequestTs";
 import "./index.less";
+import request from "@/api";
 import { useRef, useState } from "react";
 import { FilterDropdownProps } from "antd/lib/table/interface";
 
@@ -13,7 +14,15 @@ interface DataType {
 	address: string;
 }
 type DataIndex = keyof DataType;
+const socket = new WebSocket("/ws/api/ws");
 const UseHooks = () => {
+	socket.onopen = function (e) {
+		console.log(e, "eeeeeeee");
+		socket.send("My name is John");
+	};
+	socket.onmessage = function (event) {
+		console.log(event, "event");
+	};
 	// 按钮权限
 	const { BUTTONS } = useAuthButtons();
 	const { RangePicker } = DatePicker;
@@ -125,13 +134,43 @@ const UseHooks = () => {
 						<Button
 							onClick={async () => {
 								// await requestData();
-								setSelectedRowKeys(["1", "2"]);
+								const res = await request.post("/api/auth/register", {
+									Name: "admin",
+									Email: "270291223@qq.com",
+									Password: "123456abc!",
+									PasswordConfirm: "123456abc!",
+									Photo: "img"
+								});
+								console.log(res, "res");
 							}}
 							type="primary"
 						>
-							我是 Admin && User 能看到的按钮
+							注册
 						</Button>
 					)}
+					<Button
+						onClick={async () => {
+							// await requestData();
+							const res = await request.post("/api/auth/login", {
+								Email: "270291223@qq.com",
+								Password: "123456abc!"
+							});
+							console.log(res, "res");
+						}}
+						type="primary"
+					>
+						登陆
+					</Button>
+					<Button
+						onClick={async () => {
+							// await requestData();
+							const res = await request.get("/api/users/me");
+							console.log(res, "res");
+						}}
+						type="primary"
+					>
+						GetMe
+					</Button>
 					{BUTTONS.delete && (
 						<Button
 							onClick={() => {
@@ -143,8 +182,21 @@ const UseHooks = () => {
 							我是 Admin 能看到的按钮
 						</Button>
 					)}
-					<div>{count}</div>
-					{BUTTONS.edit && <Button type="primary">我是 User 能看到的按钮</Button>}
+					{
+						<Button
+							type="primary"
+							onClick={() => {
+								const res = request.post("/api/posts/", {
+									Title: "numberOne",
+									Content: "numberOneContent",
+									Image: "numberOneImage"
+								});
+								console.log(res, "res");
+							}}
+						>
+							我是 User 能看到的按钮
+						</Button>
+					}
 				</Space>
 			</div>
 			<Table

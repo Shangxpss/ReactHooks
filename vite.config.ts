@@ -48,14 +48,15 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 					rewrite: path => path.replace(/^\/api/, "")
 				},
 				"/HooksAdmin": {
-					target: `http://218.4.190.253:30208`,
+					target: `http://127.0.0.1:8000`,
 					changeOrigin: true,
 					rewrite: path => path.replace(/^\/HooksAdmin/, "")
 				},
-				"/bapi": {
-					target: `http://127.0.0.1:8081`,
-					changeOrigin: true,
-					rewrite: path => path.replace(/^\/bapi/, "/api/v1")
+				"/ws": {
+					target: "ws://127.0.0.1:8000",
+					ws: true,
+					rewrite: path => path.replace(/^\/ws/, "")
+					// rewriteWsOrigin: true
 				}
 			}
 		},

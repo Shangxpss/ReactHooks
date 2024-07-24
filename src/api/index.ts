@@ -7,7 +7,7 @@ import { AxiosCanceler } from "./helper/axiosCancel";
 import { setToken } from "@/redux/modules/global/action";
 import { message } from "antd";
 import { store } from "@/redux";
-import { desEncrypt, desDecrypt } from "./helper/crypto";
+// import { desEncrypt, desDecrypt } from "./helper/crypto";
 
 const axiosCanceler = new AxiosCanceler();
 
@@ -40,14 +40,14 @@ class RequestHttp {
 					config.headers["requestType"] = config.method!;
 					config.headers["Content-Type"] = "application/json;charset=utf-8";
 					config.headers["Accept"] = "application/json, text/plain, */*";
-					if (!(config.headers.isToken === false)) {
-						config.headers["Authorization"] = store.getState().login.token;
-						config.headers["token"] = "cxgc123456"; // 让每个请求携带自定义token 请根据实际情况自行修改
-					}
+					// if (!(config.headers.isToken === false)) {
+					// 	config.headers["Authorization"] = store.getState().login.token;
+					// 	config.headers["token"] = "cxgc123456"; // 让每个请求携带自定义token 请根据实际情况自行修改
+					// }
 				}
-				config.data = JSON.stringify({
-					dataBody: desEncrypt(JSON.stringify(config.data), "98fbffd1064a4355b8abaacb6fa96f94")
-				});
+				// config.data = JSON.stringify({
+				// 	dataBody: desEncrypt(JSON.stringify(config.data), "98fbffd1064a4355b8abaacb6fa96f94")
+				// });
 				// * 将当前请求添加到 pending 中
 				axiosCanceler.addPending(config);
 
@@ -74,7 +74,7 @@ class RequestHttp {
 				const { data, config } = response;
 				NProgress.done();
 				console.log(response, "response");
-				data.data = JSON.parse(desDecrypt(data.data, "98fbffd1064a4355b8abaacb6fa96f94"));
+				// data.data = JSON.parse(desDecrypt(data.data, "98fbffd1064a4355b8abaacb6fa96f94"));
 
 				// * 在请求结束后，移除本次请求(关闭loading)
 				axiosCanceler.removePending(config);
@@ -93,7 +93,7 @@ class RequestHttp {
 					return Promise.reject(data);
 				}
 				// * 成功请求（在页面上除非特殊情况，否则不用处理失败逻辑）
-				return data.data;
+				return data;
 			},
 			async (error: AxiosError) => {
 				const { response } = error;
