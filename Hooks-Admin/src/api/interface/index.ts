@@ -1,6 +1,6 @@
 // * 请求响应参数(不包含data)
 export interface Result {
-	code: string;
+	code: number;
 	msg: string;
 }
 
@@ -28,6 +28,8 @@ export namespace Login {
 	export interface ReqLoginForm {
 		username: string;
 		password: string;
+		code: string;
+		uuid: string;
 	}
 	export interface ResLogin {
 		access_token: string;

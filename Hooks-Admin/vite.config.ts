@@ -7,7 +7,7 @@ import { createHtmlPlugin } from "vite-plugin-html";
 import viteCompression from "vite-plugin-compression";
 import eslintPlugin from "vite-plugin-eslint";
 import { createSvgIconsPlugin } from "vite-plugin-svg-icons";
-
+// import { chunkSplitPlugin } from "vite-plugin-chunk-split";
 // @see: https://vitejs.dev/config/
 export default defineConfig((mode: ConfigEnv): UserConfig => {
 	const env = loadEnv(mode.mode, process.cwd());
@@ -46,12 +46,26 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 					target: "https://mock.mengxuegu.com/mock/62abda3212c1416424630a45", // easymock
 					changeOrigin: true,
 					rewrite: path => path.replace(/^\/api/, "")
+				},
+				"/HooksAdmin": {
+					target: `http://127.0.0.1:8000`,
+					changeOrigin: true,
+					rewrite: path => path.replace(/^\/HooksAdmin/, "")
+				},
+				"/ws": {
+					target: "ws://127.0.0.1:8000",
+					ws: true,
+					rewrite: path => path.replace(/^\/ws/, "")
+					// rewriteWsOrigin: true
 				}
 			}
 		},
 		// plugins
 		plugins: [
 			react(),
+			// chunkSplitPlugin({
+			// 	strategy: "unbundle"
+			// }),
 			createHtmlPlugin({
 				inject: {
 					data: {
@@ -67,7 +81,10 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 			// * EsLint 报错信息显示在浏览器界面上
 			eslintPlugin(),
 			// * 是否生成包预览
-			viteEnv.VITE_REPORT && visualizer(),
+			viteEnv.VITE_REPORT &&
+				visualizer({
+					open: true
+				}),
 			// * gzip compress
 			viteEnv.VITE_BUILD_GZIP &&
 				viteCompression({
@@ -77,6 +94,7 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 					algorithm: "gzip",
 					ext: ".gz"
 				})
+			// splitVendorChunkPlugin(),
 		],
 		esbuild: {
 			pure: viteEnv.VITE_DROP_CONSOLE ? ["console.log", "debugger"] : []
@@ -85,7 +103,7 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 		build: {
 			outDir: "dist",
 			// esbuild 打包更快，但是不能去除 console.log，去除 console 使用 terser 模式
-			minify: "esbuild",
+			minify: "esbuild"
 			// minify: "terser",
 			// terserOptions: {
 			// 	compress: {
@@ -93,14 +111,20 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 			// 		drop_debugger: true
 			// 	}
 			// },
-			rollupOptions: {
-				output: {
-					// Static resource classification and packaging
-					chunkFileNames: "assets/js/[name]-[hash].js",
-					entryFileNames: "assets/js/[name]-[hash].js",
-					assetFileNames: "assets/[ext]/[name]-[hash].[ext]"
-				}
-			}
+			// rollupOptions: {
+			// 	output: {
+			// 		// Static resource classification and packaging
+			// 		chunkFileNames: "assets/js/[name]-[hash].js",
+			// 		entryFileNames: "assets/js/[name]-[hash].js",
+			// 		assetFileNames: "assets/[ext]/[name]-[hash].[ext]",
+			// 		manualChunks(id) {
+			// 			console.log(id.includes("axios"));
+			// 			if (id.includes("axios")) {
+			// 				return "axios";
+			// 			}
+			// 		}
+			// 	}
+			// }
 		}
 	};
 });

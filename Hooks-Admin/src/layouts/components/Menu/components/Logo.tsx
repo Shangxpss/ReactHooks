@@ -1,4 +1,4 @@
-import logo from "@/assets/images/logo.png";
+import logo from "@/assets/images/logo.svg";
 import { connect } from "react-redux";
 
 const Logo = (props: any) => {

@@ -19,6 +19,17 @@ export interface GlobalState {
 	themeConfig: ThemeConfigProp;
 }
 
+/* GlobalState */
+export interface Login {
+	token: string;
+	name: string;
+	avatar: string;
+	roles: string[];
+	permissions: string[];
+	dept: string;
+	phoneNumber: string;
+}
+
 /* MenuState */
 export interface MenuState {
 	isCollapse: boolean;

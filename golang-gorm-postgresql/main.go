@@ -5,8 +5,6 @@ import (
 	"golang-gorm-postgres/initializers"
 	"golang-gorm-postgres/routes"
 	"log"
-	"strconv"
-	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -48,23 +46,6 @@ func main() {
 	if err != nil {
 		log.Fatal("? Could not load environment variables", err)
 	}
-	var WsChan = make(chan string)
-	go func() {
-		var count = 0
-		for {
-			time.Sleep(time.Second)
-			count++
-			WsChan <- strconv.Itoa(count)
-		}
-	}()
-	go func() {
-		for {
-
-			e := <-WsChan
-			println(e)
-		}
-		// fmt.Println("1")
-	}()
 
 	router := server.Group("/api")
 	router.GET("/ws", controllers.WsHandler)
