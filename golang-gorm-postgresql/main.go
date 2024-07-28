@@ -49,7 +49,7 @@ func main() {
 
 	router := server.Group("/api")
 	router.GET("/ws", controllers.WsHandler)
-	go controllers.ListenToWsChannel()
+	// go controllers.ListenToWsChannel()
 	AuthRouteController.AuthRoute(router)
 	UserRouteController.UserRoute(router)
 	PostRouteController.PostRoute(router)
