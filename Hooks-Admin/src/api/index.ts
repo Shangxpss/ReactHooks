@@ -49,7 +49,7 @@ class RequestHttp {
 				// 	dataBody: desEncrypt(JSON.stringify(config.data), "98fbffd1064a4355b8abaacb6fa96f94")
 				// });
 				// * 将当前请求添加到 pending 中
-				axiosCanceler.addPending(config);
+				config.headers && !config.headers.noCancel && axiosCanceler.addPending(config);
 
 				// * 如果当前请求不需要显示 loading,在api服务中通过指定的第三个参数: { headers: { noLoading: true } }来控制不显示loading，参见loginApi
 				config.headers!.noLoading || showFullScreenLoading();

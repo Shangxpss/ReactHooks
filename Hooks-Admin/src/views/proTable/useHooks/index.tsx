@@ -189,7 +189,7 @@ const UseHooks = () => {
 								const res = request.post("/api/posts/", {
 									Title: "numberOne",
 									Content: "numberOneContent",
-									Image: "numberOneImage"
+									Image: "numberOneImage1"
 								});
 								console.log(res, "res");
 							}}

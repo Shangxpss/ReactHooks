@@ -53,5 +53,6 @@ func main() {
 	AuthRouteController.AuthRoute(router)
 	UserRouteController.UserRoute(router)
 	PostRouteController.PostRoute(router)
+	routes.UploadRoute(router)
 	log.Fatal(server.Run(":" + config.ServerPort))
 }
