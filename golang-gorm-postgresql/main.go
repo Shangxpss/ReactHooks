@@ -19,6 +19,9 @@ var (
 
 	PostController      controllers.PostController
 	PostRouteController routes.PostRouteController
+
+	PersonController      controllers.PersonController
+	PersonRouteController routes.PersonRouteController
 )
 
 func init() {
@@ -38,6 +41,9 @@ func init() {
 	PostController = controllers.NewPostController(initializers.DB)
 	PostRouteController = routes.NewRoutePostController(PostController)
 
+	PersonController = controllers.NewPersonController(initializers.DB)
+	PersonRouteController = routes.NewRoutePersonController(PersonController)
+
 	server = gin.Default()
 }
 
@@ -53,6 +59,7 @@ func main() {
 	AuthRouteController.AuthRoute(router)
 	UserRouteController.UserRoute(router)
 	PostRouteController.PostRoute(router)
+	PersonRouteController.PersonRoute(router)
 	routes.UploadRoute(router)
 	log.Fatal(server.Run(":" + config.ServerPort))
 }
