@@ -1129,8 +1129,29 @@ const UseComponent = () => {
 			.append("g")
 			.attr("transform", () => `translate(${centerPoint[1]},${centerPoint[0]})`)
 			.attr("fill-opacity", 0)
-			.attr("stroke-opacity", 0);
+			.attr("stroke-opacity", 0)
+			.on("click", d => {
+				console.log(d, "d");
+				if (d.children) {
+					d.children = null;
+				} else {
+					d.children = d._children;
+					d._children = null;
+				}
+				update();
+			});
+
 		nodeEnter.append("circle").attr("r", 2.5).attr("fill", "red").attr("stroke-width", 10);
+		nodeEnter
+			.append("text")
+			.attr("dy", "0.31em")
+			.attr("x", d => (d._children ? -6 : 6))
+			.attr("text-anchor", d => (d._children ? "end" : "start"))
+			.text(d => d.data.name)
+			.attr("stroke-linejoin", "round")
+			.attr("stroke-width", 3)
+			.attr("stroke", "white")
+			.attr("paint-order", "stroke");
 
 		const link = linksGroup.current!.selectAll("path").data(links, d => d.target.id);
 
@@ -1162,7 +1183,6 @@ const UseComponent = () => {
 		centerPoint[1] = clientHeight / 2;
 		const zoom = d3.zoom().on("zoom", event => {
 			if (!svg.current) return;
-			console.log(event, "d3.event");
 			svg.current.attr("transform", event.transform);
 		});
 		svg.current = treeContainer.current
@@ -1172,7 +1192,7 @@ const UseComponent = () => {
 			.call(zoom)
 			.append("g")
 			.attr("transform", `translate(0,${centerPoint[1]})`);
-		zoom.scaleExtent([1, 3]);
+		zoom.scaleExtent([0, 3]);
 		if (!svg.current) return;
 		linksGroup.current = svg.current
 			.append("g")
